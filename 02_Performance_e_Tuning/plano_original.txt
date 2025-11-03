@@ -1,0 +1,19 @@
+Sort (cost=25.79..25.80 rows=1 width=648) (actual time=0.125..0.126 rows=0 loops=1)
+  Sort Key: t.bytes DESC
+  Sort Method: quicksort Memory: 25kB
+  ->  Nested Loop (cost=4.51..25.78 rows=1 width=648) (actual time=0.121..0.121 rows=0 loops=1)
+      ->  Nested Loop (cost=4.36..25.51 rows=1 width=314) (actual time=0.026..0.060 rows=107 loops=1)
+            ->  Seq Scan on genre g (cost=0.00..13.50 rows=1 width=262) (actual time=0.006..0.008 rows=1 loops=1)
+                    Filter: ((name)::text = 'Rock'::text)
+                    Rows Removed by Filter: 24
+            ->  Bitmap Heap Scan on track t (cost=4.36..11.78 rows=23 width=60) (actual time=0.016..0.035 rows=107 loops=1)
+                    Recheck Cond: (genre_id = g.genre_id)
+                    Filter: (milliseconds > 200000)
+                    Rows Removed by Filter: 22
+                    Heap Blocks: exact=5
+                    ->  Bitmap Index Scan on track_genre_id_idx (cost=0.00..4.36 rows=28 width=0) (actual time=0.011..0.011 rows=129 loops=1)
+                            Index Cond: (genre_id = g.genre_id)
+      ->  Index Scan using album_pkey on album a (cost=0.14..0.27 rows=1 width=342) (actual time=0.000..0.000 rows=0 loops=107)
+              Index Cond: (album_id = t.album_id)
+Planning Time: 0.182 ms
+Execution Time: 0.162 ms
